@@ -15,31 +15,44 @@ class Ecourse2Controller {
 
   Future<List<Course>> get getCourses async {
     List<Course> courses = [];
+    List<Course> coursesFromJson = [];
+    bool useCacheToken = true;
+    int retryCount = 0;
+
+    while (true)
+      try {
+        String token = await _ecourse2Credential.getToken(useCacheToken);
+        var response = await _webService(
+          token,
+          getEcourse2WsFunction('courses'),
+          {
+            'classification': 'inprogress',
+          },
+        ) as Map;
+
+        /* Convert to Course object */
+        var coursesOrigin = response['courses'] as List;
+        coursesOrigin.forEach((course) {
+          coursesFromJson.add(Course(
+            id: course['idnumber'],
+            ecourse2Id: course['id'],
+            name: course['fullname'],
+          ));
+        });
+
+        break;
+      } on TokenException catch (err) {
+        useCacheToken = false;
+        retryCount++;
+        if (retryCount > 1) throw err;
+      } catch (err) {
+        throw err;
+      }
 
     try {
-      final token = await _ecourse2Credential.getToken(true);
-      final response = await _webService(
-        token,
-        getEcourse2WsFunction('courses'),
-        {
-          'classification': 'inprogress',
-        },
-      ) as Map;
-
-      /* Convert to Course object */
-      final coursesOrigin = response['courses'] as List;
-      List<Course> coursesFromJson = [];
-      coursesOrigin.forEach((course) {
-        coursesFromJson.add(Course(
-          id: course['idnumber'],
-          ecourse2Id: course['id'],
-          name: course['fullname'],
-        ));
-      });
-
       /* Combine data from DB */
-      final dbData = await DatabaseHelper.getData('courses');
-      final coursesFromDatabase = dbData.map((e) => Course.fromMap(e)).toList();
+      var dbData = await DatabaseHelper.getData('courses');
+      var coursesFromDatabase = dbData.map((e) => Course.fromMap(e)).toList();
       coursesFromJson.forEach((course) {
         Course dbCourse = coursesFromDatabase.firstWhere(
           (element) => element.id == course.id,
@@ -56,9 +69,6 @@ class Ecourse2Controller {
 
       /* Sync data to DB */
       // TODO
-    } on TokenException catch (err) {
-      await _ecourse2Credential.getToken(false);
-      throw err;
     } catch (err) {
       throw err;
     }
@@ -341,7 +351,21 @@ class _Ecourse2Credential {
   int userid = -1;
 
   Future<String> getToken(bool useCache) async {
-    if (useCache && token.isNotEmpty) return token;
+    if (useCache) {
+      if (token.isNotEmpty) return token;
+
+      try {
+        await SharedPreferencesHelper.versionChecker();
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String tempToken = prefs.getString('moodletoken');
+
+        if (tempToken != null && tempToken.isNotEmpty) token = tempToken;
+      } catch (err) {
+        throw err;
+      }
+
+      if (token.isNotEmpty) return token;
+    }
 
     String username = '';
     String password = '';
@@ -389,10 +413,30 @@ class _Ecourse2Credential {
       throw err;
     }
 
+    /* Save token to SharedPreferences */
+    try {
+      await SharedPreferencesHelper.versionChecker();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setString('moodletoken', token);
+    } catch (err) {}
+
     return token;
   }
 
   Future<int> get getUserid async {
+    if (userid >= 0) return userid;
+
+    try {
+      await SharedPreferencesHelper.versionChecker();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int tempUserid = prefs.getInt('moodleuserid');
+
+      if (tempUserid != null && tempUserid >= 0) userid = tempUserid;
+    } catch (err) {
+      throw err;
+    }
+
     if (userid >= 0) return userid;
 
     try {
@@ -411,6 +455,14 @@ class _Ecourse2Credential {
     } catch (err) {
       throw err;
     }
+
+    /* Save userid to SharedPreferences */
+    try {
+      await SharedPreferencesHelper.versionChecker();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setInt('moodleuserid', userid);
+    } catch (err) {}
 
     return userid;
   }

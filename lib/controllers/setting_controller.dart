@@ -24,6 +24,8 @@ class SettingController {
 
     await prefs.remove('username');
     await prefs.remove('password');
+    await prefs.remove('moodletoken');
+    await prefs.remove('moodleuserid');
   }
 
   static Future<AppTheme> getAppTheme() async {
