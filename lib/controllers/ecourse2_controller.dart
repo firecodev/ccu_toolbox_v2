@@ -22,7 +22,7 @@ class Ecourse2Controller {
     while (true)
       try {
         String token = await _ecourse2Credential.getToken(useCacheToken);
-        var response = await _webService(
+        final response = await _webService(
           token,
           getEcourse2WsFunction('courses'),
           {
@@ -31,7 +31,7 @@ class Ecourse2Controller {
         ) as Map;
 
         /* Convert to Course object */
-        var coursesOrigin = response['courses'] as List;
+        final coursesOrigin = response['courses'] as List;
         coursesOrigin.forEach((course) {
           coursesFromJson.add(Course(
             id: course['idnumber'],
@@ -51,8 +51,8 @@ class Ecourse2Controller {
 
     try {
       /* Combine data from DB */
-      var dbData = await DatabaseHelper.getData('courses');
-      var coursesFromDatabase = dbData.map((e) => Course.fromMap(e)).toList();
+      final dbData = await DatabaseHelper.getData('courses');
+      final coursesFromDatabase = dbData.map((e) => Course.fromMap(e)).toList();
       coursesFromJson.forEach((course) {
         Course dbCourse = coursesFromDatabase.firstWhere(
           (element) => element.id == course.id,

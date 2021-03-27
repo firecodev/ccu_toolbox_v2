@@ -31,10 +31,13 @@
 ## Changelogs
 
 **2.0.1 (2021.03.27)**
+
 **[Fix]** Cache moodle token and userid in shared preferences to imporve loading time
+
 **[Fix]** Fix missing holiday mark in schedule data
 
 **2.0.0 (2021.03.15)**
+
 第 2 版: 架構及 UI 全部重寫
 
 ## Preparation
