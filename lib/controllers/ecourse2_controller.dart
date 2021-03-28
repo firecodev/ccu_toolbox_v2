@@ -351,18 +351,23 @@ class _Ecourse2Credential {
   int userid = -1;
 
   Future<String> getToken(bool useCache) async {
-    if (useCache) {
-      if (token.isNotEmpty) return token;
+    if (useCache && token.isNotEmpty) return token;
 
+    SharedPreferences prefs;
+
+    try {
+      await SharedPreferencesHelper.versionChecker();
+      prefs = await SharedPreferences.getInstance();
+    } catch (err) {
+      throw err;
+    }
+
+    if (useCache) {
       try {
-        await SharedPreferencesHelper.versionChecker();
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         String tempToken = prefs.getString('moodletoken');
 
         if (tempToken != null && tempToken.isNotEmpty) token = tempToken;
-      } catch (err) {
-        throw err;
-      }
+      } catch (err) {}
 
       if (token.isNotEmpty) return token;
     }
@@ -371,8 +376,6 @@ class _Ecourse2Credential {
     String password = '';
 
     try {
-      await SharedPreferencesHelper.versionChecker();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       username = prefs.getString('username');
       password = prefs.getString('password');
     } catch (err) {
@@ -415,9 +418,6 @@ class _Ecourse2Credential {
 
     /* Save token to SharedPreferences */
     try {
-      await SharedPreferencesHelper.versionChecker();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
       prefs.setString('moodletoken', token);
     } catch (err) {}
 
@@ -427,15 +427,20 @@ class _Ecourse2Credential {
   Future<int> get getUserid async {
     if (userid >= 0) return userid;
 
+    SharedPreferences prefs;
+
     try {
       await SharedPreferencesHelper.versionChecker();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int tempUserid = prefs.getInt('moodleuserid');
-
-      if (tempUserid != null && tempUserid >= 0) userid = tempUserid;
+      prefs = await SharedPreferences.getInstance();
     } catch (err) {
       throw err;
     }
+
+    try {
+      int tempUserid = prefs.getInt('moodleuserid');
+
+      if (tempUserid != null && tempUserid >= 0) userid = tempUserid;
+    } catch (err) {}
 
     if (userid >= 0) return userid;
 
@@ -458,9 +463,6 @@ class _Ecourse2Credential {
 
     /* Save userid to SharedPreferences */
     try {
-      await SharedPreferencesHelper.versionChecker();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
       prefs.setInt('moodleuserid', userid);
     } catch (err) {}
 
