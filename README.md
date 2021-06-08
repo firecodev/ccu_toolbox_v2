@@ -30,6 +30,12 @@
 
 ## Changelogs
 
+**2.0.2 (2021.06.08)**
+
+**[Fix]** Fix cannot detect invalid token bug
+
+**[Improve]** Some minor improve
+
 **2.0.1 (2021.03.27)**
 
 **[Fix]** Cache moodle token and userid in shared preferences to imporve loading time
