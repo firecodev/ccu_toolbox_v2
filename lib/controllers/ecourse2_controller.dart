@@ -509,7 +509,7 @@ Future<dynamic> _webService(
 
     final decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
-    if (decodedResponse.containsKey('errorcode')) {
+    if (decodedResponse is Map && decodedResponse.containsKey('errorcode')) {
       switch (decodedResponse['errorcode']) {
         case 'invalidtoken':
           throw TokenException();
