@@ -147,5 +147,12 @@ List<ScheduleDay> parse(String dataString) {
     }
   });
 
+  if (tempEvents.isNotEmpty) {
+    result.add(ScheduleDay(
+      date: DateTime.parse(lastDate),
+      events: tempEvents,
+    ));
+  }
+
   return result;
 }
