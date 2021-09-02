@@ -26,8 +26,11 @@ class KikiController {
       }
 
       final sessionId = await _kikiCredential.getSessionId(true);
-      final year = '109';
-      final term = '2';
+      final year = (DateTime.now().month < 8)
+          ? (DateTime.now().year - 1912).toString()
+          : (DateTime.now().year - 1911).toString();
+      final term =
+          (DateTime.now().month > 1 && DateTime.now().month < 8) ? '2' : '1';
       final response = await http.get(
         getKikiUrl('base') +
             getKikiUrl('getCourses') +
