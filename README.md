@@ -30,6 +30,14 @@
 
 ## Changelogs
 
+**2.0.3 (2021.09.02)**
+
+**[Fix]** Fix accidentally hard-coded year and term in kikiController
+
+**[Fix]** Fix last day missing in schedule
+
+**[Update]** Update schedule (2021/09/02)
+
 **2.0.2 (2021.06.08)**
 
 **[Fix]** Fix cannot detect invalid token bug
