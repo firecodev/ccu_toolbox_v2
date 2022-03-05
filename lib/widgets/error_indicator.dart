@@ -91,3 +91,26 @@ class UnknownErrorIndicator extends StatelessWidget {
     );
   }
 }
+
+class APIChangeErrorIndicator extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.design_services_rounded,
+          color: Theme.of(context).textTheme.subtitle1.color,
+          size: 45.0,
+        ),
+        Text(
+          '原 API 已無法使用，移植至新 API 開發中',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.subtitle1.color,
+            fontSize: 17.0,
+          ),
+        ),
+      ],
+    );
+  }
+}

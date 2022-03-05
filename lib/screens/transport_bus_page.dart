@@ -37,6 +37,7 @@ class _TransportBusPageState extends State<TransportBusPage>
   Widget build(BuildContext context) {
     super.build(context);
 
+    return Center(child: APIChangeErrorIndicator());
     return SafeArea(
       child: Stack(
         children: [
