@@ -184,8 +184,8 @@ class _LoginFormState extends State<LoginForm> {
                 if (value.isEmpty) {
                   return '密碼不能留白哦~';
                 }
-                if (value.length < 4 || value.length > 10) {
-                  return '密碼長度介於4~10個字元';
+                if (value.length < 4) {
+                  return '密碼長度須大於4個字元';
                 }
                 return null;
               },
